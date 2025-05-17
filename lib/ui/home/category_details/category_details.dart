@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/api/api_manager.dart';
 import 'package:news_app/ui/home/category_details/source_tab_widget.dart';
-import 'package:news_app/ui/home/category_details/source_view_model.dart';
 import 'package:news_app/utils/app_styles.dart';
 import 'package:provider/provider.dart';
 import '../../../model/SourceResponse.dart';
@@ -19,52 +18,11 @@ class CategoryDetails extends StatefulWidget {
 }
 
 class _CategoryDetailsState extends State<CategoryDetails> {
-  SourceViewModel viewModel = SourceViewModel();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    viewModel.getSources(widget.category.id);
-  }
-
 
   @override
   Widget build(BuildContext context) {
     //viewModel.getSources(categoryId) => StatelessWidget
-    return ChangeNotifierProvider(
-      create: (context) => viewModel,
-      child: Consumer<SourceViewModel>(
-          builder: (context, viewModel, child) {
-            if (viewModel.errorMessage != null) {
-              return Column(
-                children: [
-                  Text(viewModel.errorMessage!,
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  ElevatedButton(
-                      onPressed: () {
-                          viewModel.getSources(widget.category.id);
-                      },
-                      child: Text('Try Again',
-                          style: AppStyles.medium20Black))
-                ],
-              );
-            }
-            else if (viewModel.sourcesList == null) {
-                //todo loading
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.greyColor,
-                  ),
-                );
-              } else {
-                //todo: have data
-                return SourceTabWidget(sourcesList: viewModel.sourcesList!);
-              }
-            }
-
-      )
-      /*FutureBuilder<SourceResponse?>(
+    return FutureBuilder<SourceResponse?>(
           future: ApiManager.getSources(widget.category.id),
           builder: (context, snapshot) {
             //todo:loading
@@ -113,9 +71,6 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             //todo: server => success
             var sourcesList = snapshot.data?.sources ?? [];
             return SourceTabWidget(sourcesList: sourcesList);
-
-
-          },),*/
-    );
+          },);
   }
 }
