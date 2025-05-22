@@ -7,7 +7,8 @@ import 'package:news_app/model/NewsResponse.dart';
 import 'package:news_app/model/SourceResponse.dart';
 
 class ApiManager{
-  static Future<SourceResponse?> getSources(String categoryId) async {
+  static Future<SourceResponse?> getSources(
+      {required String categoryId, required String language}) async {
     //https://newsapi.org/v2/top-headlines/sources?apiKey=fb5c1d9f790443fd88d0fbc326e23284
     Uri url = Uri.https(
         ApiConstants.serverName,
@@ -15,7 +16,7 @@ class ApiManager{
       {
         'apiKey' : ApiConstants.apiKey,
         'category' : categoryId,
-        ///'language' : langId
+        'language': language
       }
     );
     try {
@@ -33,23 +34,49 @@ class ApiManager{
 
   //https://newsapi.org/v2/everything?q=bitcoin&apiKey=fb5c1d9f790443fd88d0fbc326e23284
 
-static Future<NewsResponse?> getNewsBySourceId(String sourceId) async{
+  static Future<NewsResponse?> getNewsBySourceId(
+      {required String sourceId, required String language, int page = 1}) async {
     Uri url = Uri.https(
-      ApiConstants.serverName,
-      EndPoints.newsApi,
-      {
-        'apiKey' : ApiConstants.apiKey,
-        'sources' : sourceId
-      }
+        ApiConstants.serverName,
+        EndPoints.newsApi,
+        {
+          'apiKey': ApiConstants.apiKey,
+          'sources': sourceId,
+          'language': language,
+          'page': page.toString()
+        }
     );
     try {
       var response = await http.get(url);
       var responseBody = response.body;
       var json = jsonDecode(responseBody);
       return NewsResponse.fromJson(json);
-    }catch(e){
+    } catch (e) {
       throw e;
     }
-    
-}
+  }
+
+  static Future<NewsResponse?> searchNews(
+      {required String query, required String language, int page = 1}) async {
+    Uri url = Uri.https(
+      ApiConstants.serverName,
+      EndPoints.newsApi,
+      {
+        'apiKey': ApiConstants.apiKey,
+        'q': query,
+        'language': language,
+        'page': page.toString()
+      },
+    );
+    try {
+      var response = await http.get(url);
+      var responseBody = response.body;
+      var json = jsonDecode(responseBody);
+      return NewsResponse.fromJson(json);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+
 }

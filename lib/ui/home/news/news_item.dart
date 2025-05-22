@@ -1,21 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/utils/app_colors.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../model/NewsResponse.dart';
+import '../../../providers/language_provider.dart';
 import '../../widget/custom_elevated_button.dart';
 import 'article_web_view.dart';
 
 class NewsItem extends StatelessWidget {
   News news;
    NewsItem({super.key, required this.news});
-  final fifteenAgo = DateTime.now().subtract(Duration(minutes: 15));
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    timeago.setLocaleMessages(languageProvider.currentLocal,
+        languageProvider.currentLocal == 'ar' ? timeago.ArMessages() : timeago
+            .EnMessages());
     return InkWell(
       child: Container(
         margin:EdgeInsets.symmetric(
@@ -52,14 +58,17 @@ class NewsItem extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text('By: ${news.author??''}',
+                  child: Text(
+                      '${AppLocalizations.of(context)!.by} ${news.author ??
+                          ''}',
                       style: Theme.of(context).textTheme.labelSmall),
                 ),
-                Text(timeago.format(fifteenAgo),
+                Text(news.publishedAt != null
+                    ? timeago.format(
+                    news.publishedAt!, locale: languageProvider.currentLocal)
+                    : '',
                     style: Theme.of(context).textTheme.labelSmall
                 )
-                /*Text('15 minutes ago',
-                    style: Theme.of(context).textTheme.labelSmall),*/
               ])
 
           ],
@@ -73,10 +82,6 @@ class NewsItem extends StatelessWidget {
             builder: (context) {
               return Container(
                 ////height: height*0.49,
-                /*margin:EdgeInsets.symmetric(
-                    horizontal: width*0.02,
-                    vertical: height*0.01
-                ),*/
                 padding:EdgeInsets.symmetric(
                     horizontal: width*0.02,
                     vertical: height*0.01

@@ -82,4 +82,23 @@ class Source {
     return map;
   }
 
+  Source copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? url,
+    String? category,
+    String? language,
+    String? country,
+  }) {
+    return Source(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      url: url ?? this.url,
+      category: category ?? this.category,
+      language: language ?? this.language,
+      country: country ?? this.country,
+    );
+  }
 }
