@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/theme_provider.dart';
 import '../utils/app_assets.dart';
 import 'home/home_screen.dart';
@@ -18,9 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 3)).then((value) {
-      /*Navigator.of(
+      Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));*/
+      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
     });
   }
 

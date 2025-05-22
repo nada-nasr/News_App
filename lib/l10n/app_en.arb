@@ -16,5 +16,11 @@
   "health": "Health",
   "good_morning": "Good Morning",
   "here_is_some_news": "Here is Some News",
-  "view_all": "View All"
+  "view_all": "View All",
+  "search": "Search",
+  "news": "News",
+  "no_sources_available_for_this_category": "No sources available for this category",
+  "start_typing_to_search": "Start typing to search",
+  "no_results_found": "No results found",
+  "by": "By:"
 }
