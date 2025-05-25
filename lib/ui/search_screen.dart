@@ -27,7 +27,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool hasMore = true;
   int currentPage = 1;
   String currentQuery = '';
-  final int pageSize = 20;
+  final int pageSize = 10;
 
   @override
   void initState() {
