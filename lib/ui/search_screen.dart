@@ -27,6 +27,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool hasMore = true;
   int currentPage = 1;
   String currentQuery = '';
+  final int pageSize = 20;
 
   @override
   void initState() {
@@ -79,12 +80,33 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               controller: searchController,
               onChanged: (query) {
-                currentQuery = query;
-                fetchDataByPage(isLoadMore: false); // Start new search
+                if (currentQuery != query) {
+                  currentQuery = query;
+                  // reset state for new search
+                  setState(() {
+                    searchResults.clear();
+                    currentPage = 1;
+                    hasMore = true;
+                    isLoading = false;
+                  });
+                  fetchDataByPage(isLoadMore: false); // Start new search
+                }
               },
               onFieldSubmitted: (query) {
-                currentQuery = query;
-                fetchDataByPage(isLoadMore: false); // Start new search
+                if (currentQuery != query) {
+                  currentQuery = query;
+                  setState(() {
+                    searchResults.clear();
+                    currentPage = 1;
+                    hasMore = true;
+                    isLoading = false;
+                  });
+                  fetchDataByPage(isLoadMore: false);
+                } else if (currentQuery.isNotEmpty && searchResults.isEmpty &&
+                    !isLoading) {
+                  // If query is the same, but no results yet and not loading
+                  fetchDataByPage(isLoadMore: false);
+                }
               },
             ),
             SizedBox(height: height * 0.02),
@@ -125,14 +147,17 @@ class _SearchScreenState extends State<SearchScreen> {
                             if (index < searchResults.length) {
                               return NewsItem(news: searchResults[index]);
                             } else {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16.0),
+                              return (hasMore || isLoading) &&
+                                  currentQuery.isNotEmpty
+                                  ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
                                 child: Center(
                                   child: CircularProgressIndicator(
                                     color: AppColors.greyColor,
                                   ),
                                 ),
-                              );
+                              )
+                                  : Container(); // No more data, no loading indicator
                             }
                           },
                           itemCount:
@@ -177,9 +202,6 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
     if (isLoading || !hasMore) {
-      print(
-        "fetchDataByPage skipped. isLoading: $isLoading, hasMore: $hasMore",
-      );
       return;
     }
 
@@ -193,15 +215,17 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     });
 
-    final languageCode =
-        Provider.of<LanguageProvider>(context, listen: false).currentLocal;
+    final languageProvider = Provider.of<LanguageProvider>(
+        context, listen: false);
+    final currentLanguage = languageProvider.currentLocal;
     final int pageToFetch = isLoadMore ? currentPage : 1;
 
     try {
       final NewsResponse? results = await ApiManager.searchNews(
         query: currentQuery,
-        language: languageCode,
+        language: currentLanguage,
         page: pageToFetch,
+        pageSize: pageSize,
       );
 
       if (results != null &&
@@ -210,7 +234,7 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           searchResults.addAll(results.articles!);
           currentPage++;
-          if (results.articles!.length < 20) {
+          if (results.articles!.length < pageSize) {
             hasMore = false;
             print(" No more data.");
           }
@@ -222,7 +246,7 @@ class _SearchScreenState extends State<SearchScreen> {
         });
       }
     } catch (e) {
-      print("Error during search: $e");
+      print(e.toString());
       setState(() {
         hasMore = false;
       });

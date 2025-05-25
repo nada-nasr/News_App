@@ -35,7 +35,7 @@ class ApiManager{
   //https://newsapi.org/v2/everything?q=bitcoin&apiKey=fb5c1d9f790443fd88d0fbc326e23284
 
   static Future<NewsResponse?> getNewsBySourceId(
-      {required String sourceId, required String language, int page = 1}) async {
+      {required String sourceId, required String language, int page = 1, int pageSize = 10}) async {
     Uri url = Uri.https(
         ApiConstants.serverName,
         EndPoints.newsApi,
@@ -43,7 +43,8 @@ class ApiManager{
           'apiKey': ApiConstants.apiKey,
           'sources': sourceId,
           'language': language,
-          'page': page.toString()
+          'page': page.toString(),
+          'pageSize': pageSize.toString()
         }
     );
     try {
@@ -57,7 +58,7 @@ class ApiManager{
   }
 
   static Future<NewsResponse?> searchNews(
-      {required String query, required String language, int page = 1}) async {
+      {required String query, required String language, int page = 1, int pageSize = 10}) async {
     Uri url = Uri.https(
       ApiConstants.serverName,
       EndPoints.newsApi,
@@ -65,7 +66,8 @@ class ApiManager{
         'apiKey': ApiConstants.apiKey,
         'q': query,
         'language': language,
-        'page': page.toString()
+        'page': page.toString(),
+        'pageSize': pageSize.toString()
       },
     );
     try {
