@@ -3,7 +3,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/providers/language_provider.dart';
 import 'package:news_app/providers/theme_provider.dart';
 import 'package:news_app/ui/home/home_screen.dart';
-import 'package:news_app/ui/splash_screen.dart';
 import 'package:news_app/utils/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -26,9 +25,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'News App',
       debugShowCheckedModeBanner: false,
-      initialRoute: SplashScreen.routeName,
+      initialRoute: HomeScreen.routeName,
+
+      ///SplashScreen.routeName,
       routes: {
-        SplashScreen.routeName: (context) => SplashScreen(),
+        ///SplashScreen.routeName: (context) => SplashScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
       },
       localizationsDelegates: AppLocalizations.localizationsDelegates,
