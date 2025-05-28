@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/providers/language_provider.dart';
 import 'package:news_app/providers/theme_provider.dart';
 import 'package:news_app/ui/home/home_screen.dart';
 import 'package:news_app/ui/splash_screen.dart';
 import 'package:news_app/utils/app_theme.dart';
+import 'package:news_app/utils/my_bloc_observer.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  Bloc.observer = MyBlocObserver();
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => LanguageProvider()),

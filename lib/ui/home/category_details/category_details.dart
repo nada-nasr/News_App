@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/ui/home/category_details/cubit/source_states.dart';
+import 'package:news_app/ui/home/category_details/cubit/source_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:translator/translator.dart';
 
-import '../../../api/api_manager.dart';
-import '../../../model/SourceResponse.dart';
 import '../../../model/category.dart';
 import '../../../providers/language_provider.dart';
 import '../../../utils/app_colors.dart';
-import '../../../utils/app_styles.dart';
 import '../category_details/source_tab_widget.dart';
 
 class CategoryDetails extends StatefulWidget {
@@ -22,32 +21,48 @@ class CategoryDetails extends StatefulWidget {
 }
 
 class _CategoryDetailsState extends State<CategoryDetails> {
-  final googleTranslator = GoogleTranslator();
+  SourceViewModel viewModel = SourceViewModel();
+
+  @override
+  void initState() {
+    final languageProvider = Provider.of<LanguageProvider>(
+        context, listen: false);
+    final currentLanguage = languageProvider.currentLocal;
+    // TODO: implement initState
+    super.initState();
+    viewModel.getSources(widget.category.id, currentLanguage);
+  }
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
     final currentLanguage = languageProvider.currentLocal;
-
-    return FutureBuilder<SourceResponse?>(
-      future: fetchAndTranslateSources(widget.category.id, currentLanguage),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.greyColor,
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return BlocProvider<SourceViewModel>(
+      create: (context) => viewModel,
+      child: BlocBuilder<SourceViewModel, SourceStates>(
+          builder: (context, state) {
+            //todo:loading
+            if (state is SourceLoadingState) {
+              return Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.greyColor,
+                ),
+              );
+            }
+            //todo: error => client
+            else if (state is SourceErrorState) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Something Went Wrong', style: AppStyles.medium20Black),
+                  Text(state.errorMessage,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .headlineMedium),
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {});
+                      viewModel.getSources(widget.category.id, currentLanguage);
                     },
                     child: Text('Try Again', style: Theme
                         .of(context)
@@ -55,73 +70,14 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                         .headlineLarge),
                   ),
                 ],
-            ),
-          );
-        } else if (snapshot.data?.status != 'ok') {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(snapshot.data!.message!, style: Theme
-                      .of(context)
-                      .textTheme
-                      .headlineLarge),
-                  SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {});
-                    },
-                    child: Text('Try again', style: AppStyles.medium20Black),
-                  ),
-                ],
-            ),
-          );
-        }
-
-        var sourcesList = snapshot.data?.sources ?? [];
-        return SourceTabWidget(sourcesList: sourcesList);
-      },
+              );
+            }
+            else if (state is SourceSuccessState) {
+              return SourceTabWidget(sourcesList: state.sourcesList);
+            }
+            return Container(); // un reachable
+          }
+      ),
     );
-  }
-
-  Future<String> translateText(String text, String targetLanguage) async {
-    try {
-      if (text.isEmpty) {
-        return '';
-      }
-      final translation = await googleTranslator.translate(
-          text, to: targetLanguage);
-      return translation.text;
-    } catch (e) {
-      print(e);
-      return text;
-    }
-  }
-
-  Future<SourceResponse?> fetchAndTranslateSources(String categoryId,
-      String languageCode) async {
-    final response = await ApiManager.getSources(
-        categoryId: categoryId, language: languageCode);
-    if (response?.sources != null) {
-      List<Source> translatedSources = [];
-      for (var source in response!.sources!) {
-        final translatedName = await translateText(
-            source.name ?? '', languageCode);
-        final translatedDescription = await translateText(
-            source.description ?? '', languageCode);
-        translatedSources.add(source.copyWith(
-          name: translatedName,
-          description: translatedDescription,
-        ));
-      }
-      // Create a new SourceResponse with the translated list of sources
-      return SourceResponse(
-        status: response.status,
-        code: response.code,
-        message: response.message,
-        sources: translatedSources,
-      );
-    }
-    return response;
   }
 }
