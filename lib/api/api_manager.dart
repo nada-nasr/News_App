@@ -7,7 +7,7 @@ import 'package:news_app/model/NewsResponse.dart';
 import 'package:news_app/model/SourceResponse.dart';
 
 class ApiManager{
-  static Future<SourceResponse?> getSources(
+  Future<SourceResponse?> getSources(
       {required String categoryId, required String language}) async {
     //https://newsapi.org/v2/top-headlines/sources?apiKey=fb5c1d9f790443fd88d0fbc326e23284
     Uri url = Uri.https(
@@ -34,7 +34,7 @@ class ApiManager{
 
   //https://newsapi.org/v2/everything?q=bitcoin&apiKey=fb5c1d9f790443fd88d0fbc326e23284
 
-  static Future<NewsResponse?> getNewsBySourceId(
+  Future<NewsResponse?> getNewsBySourceId(
       {required String sourceId, required String language, int page = 1, required int pageSize}) async {
     Uri url = Uri.https(
         ApiConstants.serverName,

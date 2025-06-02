@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/model/category.dart';
 import 'package:news_app/utils/app_colors.dart';
 import 'package:provider/provider.dart';
-
+import '../../l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/theme_provider.dart';
 

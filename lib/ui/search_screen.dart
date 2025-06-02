@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/ui/home/home_screen.dart';
 import 'package:news_app/ui/home/news/news_item.dart';
 import 'package:news_app/ui/widget/custom_text_field.dart';
 import 'package:provider/provider.dart';
 
 import '../api/api_manager.dart';
+import '../l10n/app_localizations.dart';
 import '../model/NewsResponse.dart';
 import '../providers/language_provider.dart';
 import '../utils/app_colors.dart';

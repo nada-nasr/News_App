@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/ui/home/category_details/category_details.dart';
 import 'package:news_app/ui/home/category_fragment.dart';
 import 'package:news_app/ui/home_drawer.dart';
@@ -7,8 +6,13 @@ import 'package:news_app/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../../api/api_manager.dart';
+import '../../l10n/app_localizations.dart';
 import '../../model/category.dart';
 import '../../providers/language_provider.dart';
+import '../../repository/sources/dataSources/remote/source_remote_data_source.dart';
+import '../../repository/sources/dataSources/remote/source_remote_data_source_impl.dart';
+import '../../repository/sources/repository/source_repository.dart';
+import '../../repository/sources/repository/source_repository_impl.dart';
 import '../search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +24,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? selectedLanguage;
+  late SourceRepository sourceRepository;
+  late SourceRemoteDataSource remoteDataSource;
+  late ApiManager apiManager;
+
 
   @override
   void initState() {
@@ -28,6 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    apiManager = ApiManager();
+    remoteDataSource = SourceRemoteDataSourceImpl(apiManager: apiManager);
+    sourceRepository = SourceRepositoryImpl(
+        remoteDataSource: remoteDataSource);
     return Scaffold(
       appBar: AppBar(
         title: Text(selectedCategory == null
@@ -62,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final languageProvider = Provider.of<LanguageProvider>(
         context, listen: false);
     final currentLanguage = languageProvider.currentLocale.languageCode;
-    ApiManager.getSources(categoryId: category.id, language: currentLanguage);
+    sourceRepository.getSources(
+        categoryId: category.id,
+        language: currentLanguage);
   }
 
   void onCategoryClick(Category newSelectedCategory){

@@ -1,11 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/api/api_manager.dart';
 import 'package:news_app/model/SourceResponse.dart';
+import 'package:news_app/repository/sources/repository/source_repository.dart';
 import 'package:news_app/ui/home/category_details/cubit/source_states.dart';
 import 'package:translator/translator.dart';
 
 class SourceViewModel extends Cubit<SourceStates> {
-  SourceViewModel() : super(SourceLoadingState()); // Initial state
+  SourceRepository sourceRepository;
+
+  SourceViewModel({required this.sourceRepository})
+    : super(SourceLoadingState()); // Constructor Injection
+  /*late SourceRepository sourceRepository;
+  late SourceRemoteDataSource remoteDataSource;
+  late ApiManager apiManager;
+  
+  SourceViewModel() : super(SourceLoadingState()){
+    apiManager = ApiManager();
+    remoteDataSource = SourceRemoteDataSourceImpl(apiManager: apiManager);
+    sourceRepository = SourceRepositoryImpl(
+        remoteDataSource: remoteDataSource);
+  }*/ // Initial state
   //todo: hold data, handle logic
   final googleTranslator = GoogleTranslator();
 
@@ -16,7 +29,7 @@ class SourceViewModel extends Cubit<SourceStates> {
     try {
       //todo: loading
       emit(SourceLoadingState());
-      var response = await ApiManager.getSources(
+      var response = await sourceRepository.getSources(
         categoryId: categoryId,
         language: language,
       );

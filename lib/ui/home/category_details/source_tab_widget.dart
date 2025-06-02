@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/ui/home/category_details/source_tab_name.dart';
 import 'package:news_app/ui/home/news/news_widget.dart';
 import 'package:news_app/utils/app_colors.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../model/SourceResponse.dart';
 
 class SourceTabWidget extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '../../../l10n/app_localizations.dart';
 import '../../../model/NewsResponse.dart';
 import '../../../providers/language_provider.dart';
 import '../../widget/custom_elevated_button.dart';
