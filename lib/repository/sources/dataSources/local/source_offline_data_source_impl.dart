@@ -9,7 +9,6 @@ class SourceOfflineDataSourceImpl implements SourceOfflineDataSource {
     required String language,
   }) async {
     var box = await Hive.openBox('SourceTabs');
-
     ///var sourceTap = SourceResponse.fromJson(box.get(categoryId)); //todo: map => object
     var sourceTap = box.get(categoryId);
     return sourceTap;
@@ -18,7 +17,6 @@ class SourceOfflineDataSourceImpl implements SourceOfflineDataSource {
   @override
   void saveSources(SourceResponse? sourceResponse, String categoryId) async {
     var box = await Hive.openBox('SourceTabs');
-
     ///await box.put(categoryId, sourceResponse?.toJson()); //todo: object => map
     await box.put(categoryId, sourceResponse);
     await box.close();
