@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/di/di.dart';
 import 'package:news_app/model/SourceResponse.dart';
 import 'package:news_app/providers/language_provider.dart';
 import 'package:news_app/ui/home/news/cubit/news_states.dart';
@@ -21,7 +22,8 @@ class NewsWidget extends StatefulWidget {
 
 class _NewsWidgetState extends State<NewsWidget> {
   ScrollController scrollController = ScrollController();
-  late NewsViewModel newsViewModel;
+  NewsViewModel viewModel = NewsViewModel(
+      newsRepository: injectNewsRepository());
 
   @override
   void initState() {
@@ -32,11 +34,11 @@ class _NewsWidgetState extends State<NewsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (newsViewModel.state is NewsLoadingState) {
+    if (viewModel.state is NewsLoadingState) {
       final languageProvider = Provider.of<LanguageProvider>(
           context, listen: false);
       final currentLanguage = languageProvider.currentLocal;
-      newsViewModel.getNews(widget.source, currentLanguage);
+      viewModel.getNews(widget.source, currentLanguage);
     }
   }
 
@@ -51,7 +53,7 @@ class _NewsWidgetState extends State<NewsWidget> {
         final languageProvider = Provider.of<LanguageProvider>(
             context, listen: false);
         final currentLanguage = languageProvider.currentLocal;
-        newsViewModel.resetAndFetchNewsForNewSource(
+        viewModel.resetAndFetchNewsForNewSource(
             widget.source, currentLanguage);
       });
     }
@@ -61,7 +63,7 @@ class _NewsWidgetState extends State<NewsWidget> {
   void dispose() {
     scrollController.removeListener(onScroll);
     scrollController.dispose();
-    newsViewModel.close(); // Dispose the ViewModel
+    viewModel.close(); // Dispose the ViewModel
     super.dispose();
   }
 
@@ -71,7 +73,7 @@ class _NewsWidgetState extends State<NewsWidget> {
       final languageProvider = Provider.of<LanguageProvider>(
           context, listen: false);
       final currentLanguage = languageProvider.currentLocal;
-      newsViewModel.loadMore(widget.source, currentLanguage);
+      viewModel.loadMore(widget.source, currentLanguage);
     }
   }
 
@@ -81,14 +83,14 @@ class _NewsWidgetState extends State<NewsWidget> {
     final currentLanguage = languageProvider.currentLocal;
 
     return BlocProvider<NewsViewModel>(
-      create: (context) => newsViewModel,
+      create: (context) => viewModel,
       child: BlocBuilder<NewsViewModel, NewsStates>(
         builder: (context, state) {
           List<News> newsListToDisplay = [];
           bool isLoadingMore = false;
           bool hasMoreNews = false;
 
-          newsListToDisplay = newsViewModel.allNews;
+          newsListToDisplay = viewModel.allNews;
 
           if (state is NewsLoadingState) {
             isLoadingMore = state.isLoadMore;
@@ -118,7 +120,7 @@ class _NewsWidgetState extends State<NewsWidget> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        newsViewModel.getNews(
+                        viewModel.getNews(
                             widget.source, currentLanguage);
                       },
                       child: Text(
