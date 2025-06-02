@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/di/di.dart';
 import 'package:news_app/ui/home/category_details/category_details.dart';
 import 'package:news_app/ui/home/category_fragment.dart';
 import 'package:news_app/ui/home_drawer.dart';
@@ -28,18 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
   late SourceRemoteDataSource remoteDataSource;
   late ApiManager apiManager;
 
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     apiManager = ApiManager();
     remoteDataSource = SourceRemoteDataSourceImpl(apiManager: apiManager);
     sourceRepository = SourceRepositoryImpl(
-        remoteDataSource: remoteDataSource);
+        remoteDataSource: remoteDataSource,
+        offlineDataSource: injectSourceOfflineDataSource());
     return Scaffold(
       appBar: AppBar(
         title: Text(selectedCategory == null

@@ -6,6 +6,8 @@ import 'package:news_app/api/api_manager.dart';
 import 'package:news_app/repository/news/dataSources/remote/news_remote_data_source.dart';
 import 'package:news_app/repository/news/dataSources/remote/news_remote_data_source_impl.dart';
 import 'package:news_app/repository/news/repository/news_repository_impl.dart';
+import 'package:news_app/repository/sources/dataSources/local/source_offline_data_source.dart';
+import 'package:news_app/repository/sources/dataSources/local/source_offline_data_source_impl.dart';
 import 'package:news_app/repository/sources/dataSources/remote/source_remote_data_source.dart';
 import 'package:news_app/repository/sources/dataSources/remote/source_remote_data_source_impl.dart';
 import 'package:news_app/repository/sources/repository/source_repository.dart';
@@ -15,12 +17,19 @@ import '../repository/news/repository/news_repository.dart';
 
 //Source
 SourceRepository injectSourceRepository() {
-  return SourceRepositoryImpl(remoteDataSource: injectSourceRemoteDataSource());
+  return SourceRepositoryImpl(
+      remoteDataSource: injectSourceRemoteDataSource(),
+      offlineDataSource: injectSourceOfflineDataSource());
 }
 
 SourceRemoteDataSource injectSourceRemoteDataSource() {
   return SourceRemoteDataSourceImpl(apiManager: injectApiManager());
 }
+
+SourceOfflineDataSource injectSourceOfflineDataSource() {
+  return SourceOfflineDataSourceImpl();
+}
+
 
 ApiManager injectApiManager() {
   return ApiManager();
